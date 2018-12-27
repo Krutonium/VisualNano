@@ -13,4 +13,4 @@ Linux (GTK)
 
 Windows (WPF or WinForms)
 
-![Image](https://i.imgur.com/JcEHvdA.png)
+![Image](https://i.imgur.com/GD0CMiJ.png)
