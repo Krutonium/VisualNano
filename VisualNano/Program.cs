@@ -20,9 +20,14 @@ namespace VisualNano
         private static RichTextArea RTB;
         private static SaveFileDialog saveDialog;
         private static Options options;
+        private static string toOpen = null;
         [STAThread]
         public static void Main(string[] args)
         {
+            if (args.Length > 0)
+            {
+                toOpen = args[0];
+            }
             options = new Options();
             string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
                                 @"/visualnano/config.json";
@@ -63,6 +68,10 @@ namespace VisualNano
                 // sets the client (inner) size of the window for your content
                 this.ClientSize = new Eto.Drawing.Size(options.Width, options.Height);
                 this.Content = RTB;
+                if (toOpen == null == false)
+                {
+                    RTB.Text = File.ReadAllText(toOpen);
+                }
                 this.Title = "Visual Nano";
                 Menu = new MenuBar
                 {
@@ -198,6 +207,7 @@ namespace VisualNano
                             encoding = GetEncoding(saveDialog.FileName);
                         }
                         File.WriteAllText(saveDialog.FileName, RTB.Text, encoding);
+                        
                     }
                 }
             }
