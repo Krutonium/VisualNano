@@ -73,6 +73,7 @@ namespace VisualNano
                 if (toOpen == null == false)
                 {
                     RTB.Text = File.ReadAllText(toOpen);
+                    saveDialog.FileName = toOpen;
                 }//Load command line specified file, if one exists.
                 
                 this.Title = "Visual Nano";
