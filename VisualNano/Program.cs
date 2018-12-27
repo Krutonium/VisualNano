@@ -52,6 +52,8 @@ namespace VisualNano
                 File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(options, Formatting.Indented));
                 Console.WriteLine("Created Config File");
             }
+            //Above code was setting up our config file.
+            //It's stored in .config or %appdata% depending on your OS.
             new Eto.Forms.Application().Run(new TestForm());
         }
 
@@ -71,7 +73,8 @@ namespace VisualNano
                 if (toOpen == null == false)
                 {
                     RTB.Text = File.ReadAllText(toOpen);
-                }
+                }//Load command line specified file, if one exists.
+                
                 this.Title = "Visual Nano";
                 Menu = new MenuBar
                 {
@@ -117,10 +120,10 @@ namespace VisualNano
                                 "This Project is licensed under MIT as a result.";
                 about.Copyright = "Copyright This Programs Authors";
                 about.ProgramName = "Visual Nano";
-                about.Version = "Version 18.12.26";
+                about.Version = "Version 18.12.26"; //Version is Date - 2018/12/26 becomes 18.12.26
                 about.Website = new Uri("https://github.com/Krutonium/VisualNano");
                 
-                var Authors = new string[] {"Krutonium"};
+                var Authors = new string[] {"Krutonium"}; //Add your name here if you contribute!
                 about.Developers = Authors;
                 about.ShowDialog(Application.Instance.MainForm);
             }
@@ -129,6 +132,7 @@ namespace VisualNano
         {
             public NewDocument()
             {
+                //TODO: Prompt user to Save.
                 MenuText = "New Document";
                 ToolBarText = "New Document";
                 ToolTip = "Creates a new Document";
@@ -146,6 +150,7 @@ namespace VisualNano
         {
             public Open()
             {
+                //TODO: Prompt User to save.
                 MenuText = "Open File";
                 ToolBarText = "Open File";
                 ToolTip = "Opens a file";
@@ -168,6 +173,7 @@ namespace VisualNano
         {
             public Quit()
             {
+                //TODO: Prompt user to save.
                 MenuText = "Quit";
                 ToolBarText = "Quit";
                 Shortcut = Application.Instance.CommonModifier | Keys.X;
@@ -199,15 +205,15 @@ namespace VisualNano
                 {
                     saveDialog.Title = "Save File...";
                     var result = saveDialog.ShowDialog(Application.Instance.MainForm);
-                    var encoding = encodingFinder(options.encoding);
+                    var encoding = encodingFinder(options.encoding); //Get format specified in options.
                     if (result == DialogResult.Ok)
                     {
-                        if (File.Exists(saveDialog.FileName))
+                        if (File.Exists(saveDialog.FileName)) //If the file already exists, we should preserve the existing formatting instead.
                         {
                             encoding = GetEncoding(saveDialog.FileName);
                         }
                         File.WriteAllText(saveDialog.FileName, RTB.Text, encoding);
-                        
+                        //TODO: Some sort of notification that save has completed?
                     }
                 }
             }
@@ -255,7 +261,7 @@ namespace VisualNano
                 case "ASCII":
                     return Encoding.ASCII;
             }
-            return Encoding.Default;
+            return Encoding.Default; //System Default format, if the user specifies an invalid format.
         }
     }
 }
