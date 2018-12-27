@@ -9,3 +9,6 @@ So far I've tested it on Windows and Linux, but it should work fine on MacOS as 
 
 Linux (GTK)
 ![Image](https://i.imgur.com/UKEKpqU.png)
+
+Windows (WPF or WinForms)
+![Image](https://i.imgur.com/JcEHvdA.png)
