@@ -1,0 +1,10 @@
+
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Terminal=false
+Exec=/usr/bin/mono /home/krutonium/RiderProjects/VisualNano/VisualNano/bin/Rele$
+Name=Visual Nano
+Icon=gedit
+MimeType=text/plain;
