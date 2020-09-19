@@ -49,7 +49,7 @@ namespace VisualNano
                 options.Width = 800;
                 options.Height = 600;
                 options.encoding = "UTF-8";
-                File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(options, Formatting.Indented));
+                SaveConfig(options);
                 Console.WriteLine("Created Config File");
             }
             //Above code was setting up our config file.
@@ -57,7 +57,12 @@ namespace VisualNano
             new Eto.Forms.Application().Run(new TestForm());
         }
 
-
+        public static void SaveConfig(Options config)
+        {
+            string ConfigPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                @"/visualnano/config.json";
+            File.WriteAllText(ConfigPath, JsonConvert.SerializeObject(options, Formatting.Indented));
+        }
         class TestForm : Eto.Forms.Form
         {
             
@@ -67,9 +72,22 @@ namespace VisualNano
                 RTB  = new RichTextArea();
                 //Init our Things ^
                 
+                //TODO: Put everything in tabs
+                
                 // sets the client (inner) size of the window for your content
                 this.ClientSize = new Eto.Drawing.Size(options.Width, options.Height);
                 this.Content = RTB;
+                
+                //Load last document even if it wasn't saved
+                if (File.Exists(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                "/visualnano/~lastdocument"))
+                {
+                    RTB.Text = File.ReadAllText(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                               "/visualnano/~lastdocument");
+                }
+
+                RTB.TextChanged += (sender, args) => File.WriteAllText((Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) +
+                                                                       "/visualnano/~lastdocument"), RTB.Text);
                 if (toOpen == null == false)
                 {
                     RTB.Text = File.ReadAllText(toOpen);
@@ -77,25 +95,35 @@ namespace VisualNano
                 }//Load command line specified file, if one exists.
                 
                 this.Title = "Visual Nano";
+
+                var FileMenu = new ButtonMenuItem 
+                {
+                    Text = "File",
+                    Items =
+                    {
+                        // you can add commands or menu items
+                        new NewDocument(),
+                        new Open(),
+                        new Save(),
+                        new About(),
+                        new Quit(),
+                    }
+                };
+                var EditMenu = new ButtonMenuItem
+                {
+                    Text = "Edit",
+                    Items =
+                    {
+                        new FontChooser()
+                    }
+                };
+                
                 Menu = new MenuBar
                 {
                     Items =
                     {
-                        new ButtonMenuItem
-                        {
-                            Text = "File",
-                            Items =
-                            {
-                                // you can add commands or menu items
-                                new NewDocument(),
-                                new Open(),
-                                new Save(),
-                                new About(),
-                                new Quit(),
-                            }
-                            
-                        }
-                        
+                       FileMenu,
+                       EditMenu
                     }
                 };
             }
@@ -108,7 +136,6 @@ namespace VisualNano
                 MenuText = "About";
                 ToolBarText = "About";
                 ToolTip = "About this application";
-                
             }
 
             protected override void OnExecuted(EventArgs e)
@@ -127,6 +154,31 @@ namespace VisualNano
                 var Authors = new string[] {"Krutonium"}; //Add your name here if you contribute!
                 about.Developers = Authors;
                 about.ShowDialog(Application.Instance.MainForm);
+            }
+        }
+
+        public class FontChooser : Command
+        {
+            public FontChooser()
+            {
+                MenuText = "Font";
+                ToolBarText = "Font Selection";
+                ToolTip = "Select a font";
+            }
+
+            protected override void OnExecuted(EventArgs e)
+            {
+                base.OnExecuted(e);
+                var FontSelector = new FontDialog();
+                var result = FontSelector.ShowDialog(Application.Instance.MainForm);
+                if (result == DialogResult.Ok)
+                {
+                    RTB.Font = FontSelector.Font;
+                    //options.font = FontSelector.Font;
+                    //SaveConfig(options);
+                    //Crashes for some reason
+                    //Seems to be a lbrary bug.
+                }
             }
         }
         public class NewDocument : Command
@@ -237,11 +289,12 @@ namespace VisualNano
             return encodingFinder(options.encoding);
         }
 
-        class Options
+        internal class Options
         {
             public string encoding;
             public int Height;
             public int Width;
+            public Font font;
         }
 
         private static Encoding encodingFinder(string encoding)
